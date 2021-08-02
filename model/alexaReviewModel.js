@@ -1,9 +1,15 @@
 const alexaReview = require('../data/alexa');
 const { writeDataToFile } = require('../utils/util');
+const _ = require('lodash');
+const { reject } = require('lodash');
+
 
 
 // Function to check value
 function checkValue(key, reviewData, givenData) {
+    if (_.isNull(key) || _.isNull(reviewData) || _.isNull(givenData)) {
+        return false
+    }
     var retVal = false;
     if (key != 'reviewed_date') {
         retVal = reviewData != givenData ? true : false;
@@ -16,13 +22,16 @@ function checkValue(key, reviewData, givenData) {
 
 // Function to filter data based on storeType, rating or date
 function findAlexaReviewByGivenFilter(storeType, rating, date) {
-    
+
     const filter = {
         review_source: storeType,
         rating: rating,
         reviewed_date: date
     };
     return new Promise((resolve, reject) => {
+        if (_.isNull(storeType) || _.isNull(rating) || _.isNull(date)) {
+            reject({ message: "Parameters cannot be null" });
+        }
         let result = alexaReview.filter((item) => {
             for (let key in filter) {
                 if (filter[key]) {
@@ -33,6 +42,7 @@ function findAlexaReviewByGivenFilter(storeType, rating, date) {
             }
             return true;
         });
+        
         resolve(result);
     })
 }
@@ -40,6 +50,9 @@ function findAlexaReviewByGivenFilter(storeType, rating, date) {
 
 // Function to filter data based on storeType
 function filterByStoreType(storeType) {
+    if (_.isNull(storeType)) {
+        return (false);
+    }
     let result = alexaReview.filter((element) => {
         if (element.review_source === storeType) {
             return true;
@@ -72,7 +85,13 @@ function calculateAverageRating(data) {
 // Function to return average rating based on given month, year and store
 function findAverageRatingByMonthAndYearPerStore(month, year, store) {
     return new Promise((resolve, reject) => {
+        if(_.isNull(month) || _.isNull(year) || _.isNull(store)){
+            reject({ message: 'Parameters cannot be null' });
+        }
         let dataByStoreType = filterByStoreType(store);
+        if (_.isEmpty(dataByStoreType)) {
+            reject({ message: 'There is no data for given store type' });
+        }
         let result = dataByStoreType.filter((element) => {
             let Date = (element.reviewed_date).substring(0, 10);
             let reviewMonth = Date.split('-')[1];
@@ -101,15 +120,14 @@ function calculateTotalRating() {
             '4*': filterByRating(4).length,
             '5*': filterByRating(5).length
         }
-
         resolve(ratingObj);
     });
 }
 
 // Function to post new review to the file
-function createReview(review){
+function createReview(review) {
     return new Promise((resolve, reject) => {
-        const newReview = {...review};
+        const newReview = { ...review };
         alexaReview.push(newReview);
         writeDataToFile('./data/alexa.json', alexaReview);
         resolve(newReview);

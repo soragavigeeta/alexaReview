@@ -6,22 +6,24 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon app.js",
-    "test": "mocha",
-    "appTest": "mocha ./test/appTest.js",
-    "controllerTest": "mocha ./test/controller/alexaReviewControllerTest.js",
-    "modelTest": "mocha ./test/model/alexaReviewModelTest.js"
+    "test": "nyc --reporter=text mocha",
+    "appTest": "nyc --reporter=lcov mocha ./test/appTest.js",
+    "controllerTest": "nyc --reporter=lcov mocha ./test/controller/alexaReviewControllerTest.js",
+    "modelTest": "nyc --reporter=lcov mocha ./test/model/alexaReviewModelTest.js"
   },
   "author": "Geeta Soragavi",
   "license": "ISC",
   "devDependencies": {
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
+    "lodash": "^4.17.21",
     "mocha": "^9.0.2",
     "nodemon": "^2.0.12",
     "sinon": "^11.1.1"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "nyc": "^15.1.0"
   }
 }

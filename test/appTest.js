@@ -1,7 +1,9 @@
+const { assert } = require('chai');
 let chai = require('chai');
 let chaiHttp = require('chai-http');
 var should = chai.should();
 let server = require('../app');
+const expect = require('chai').expect;
 
 chai.use(chaiHttp);
 
@@ -21,6 +23,10 @@ describe('App test', () => {
             .end((err, response) => {
                 response.should.have.status(200)
                 response.body.should.be.a('array');
+                response.body.forEach((item) => {
+                    item.should.have.property('review_source', 'iTunes');
+                    item.should.have.property('rating', 1);
+                })
                 done();
             })
     })
@@ -42,9 +48,18 @@ describe('App test', () => {
                 done();
             })
     })
-    it('API should return 404 not found if path is incorrect', (done) => {
+    it('API should return 404 not found if path is incorrect',  (done) => {
         chai.request('http://localhost:5000')
             .get('/api/alexa/average/01/2018')
+            .end((err, response) => {
+                response.should.have.status(404)
+                response.body.should.be.a('object');
+                done();
+            });
+    })
+    it('API should return 404 not found if query result does not exist', (done) => {
+        chai.request('http://localhost:5000')
+            .get('/api/alexa/average/01/2018/Google')
             .end((err, response) => {
                 response.should.have.status(404)
                 response.body.should.be.a('object');

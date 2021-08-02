@@ -16,7 +16,7 @@ app.get('/', function (req, res) {
 // Get data by given filter as storeType or date or rating
 app.get('/api/alexa/filter/:storeTye?/:date?/:rating?', async function (req, res) {
     let result = await getAlexaReviewByGivenFilter(req.query.storeType, req.query.rating, req.query.date);
-    if (!result  || (result.length === 0)) {
+    if (!result || (result.length === 0)) {
         res.status(404).json({ message: 'Query data not found' });
     } else {
         res.json(result);
@@ -36,11 +36,7 @@ app.get('/api/alexa/average/:month/:year/:store', async function (req, res) {
 // Get total ratings of all the type eg: "1*": 10 so on
 app.get('/api/alexa/totalRating', async function (req, res) {
     let result = await getTotalRating();
-    if (!result) {
-        res.status(404).json({ message: 'Query data not found' });
-    } else {
-        res.status(200).json(result);
-    }
+    res.status(200).json(result);
 });
 
 // Add new review to given review data

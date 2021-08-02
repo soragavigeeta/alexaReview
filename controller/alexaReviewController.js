@@ -24,13 +24,8 @@ async function getAverageRatingByMonthAndYearPerStore(month, year, store) {
 
 // Get API '/api/alexa/totalRating'
 async function getTotalRating() {
-
-    try {
-        const result = await AlexaReview.calculateTotalRating();
-        return result;
-    } catch (error) {
-        console.log(error);
-    }
+    const result = await AlexaReview.calculateTotalRating();
+    return result;
 }
 
 // Post API '/api/alexa/postReview'
